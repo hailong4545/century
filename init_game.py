@@ -63,27 +63,54 @@ def stop_game(players):
     
     return False
 
+# def check_player_win(players):
+    # id_win = []
+
+    # max_point = players[0].count_point
+    # for i in range(1, len(players)):
+        # if players[i].count_point > max_point:
+            # max_point = players[i].count_point
+    
+    # for i in range(len(players)-1, -1, -1):
+        # if players[i].count_point == max_point:
+            # id_win.append(i+1)
+            # break
+
+    # return id_win
+
+# def show_point_players(players, id):
+    # for i in range(len(players)):
+        # print(f'NGƯỜI CHƠI {i+1} CÓ {players[i].count_point} ĐIỂM')
+
+    # for i in id:
+        # print(f'NGƯỜI CHƠI THỨ {i} CHIẾN THẮNG')
+        
+        
 def check_player_win(players):
     id_win = []
 
-    max_point = players[0].count_point
+    max_point = players[0].count_point + sum(players[0].material.values()) - players[0].material['yellow']
     for i in range(1, len(players)):
         if players[i].count_point > max_point:
-            max_point = players[i].count_point
+            max_point = players[i].count_point + sum(players[i].material.values()) - players[i].material['yellow']
     
     for i in range(len(players)-1, -1, -1):
-        if players[i].count_point == max_point:
+        if players[i].count_point + sum(players[i].material.values()) - players[i].material['yellow']  == max_point:
             id_win.append(i+1)
             break
 
     return id_win
 
 def show_point_players(players, id):
+    print()
+    print('Kết thúc màn chơi')
     for i in range(len(players)):
-        print(f'NGƯỜI CHƠI {i+1} CÓ {players[i].count_point} ĐIỂM')
-
+        material_point = sum(players[i].material.values()) - players[i].material['yellow']
+        print(f'NGƯỜI CHƠI {i+1} CÓ {players[i].count_card} THẺ VÀ {players[i].count_point} ĐIỂM, ĐIỂM TỪ NGUYÊN LIỆU LÀ {material_point}, TỔNG ĐIỂM LÀ {material_point+players[i].count_point}')
+    
     for i in id:
         print(f'NGƯỜI CHƠI THỨ {i} CHIẾN THẮNG')
+ 
 
 
 def check_dict(dt):
