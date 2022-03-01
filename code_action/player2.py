@@ -20,8 +20,6 @@ from init_game import convert, check_get_card_point
 def action(player, board):
     card_point = board['card_point']
     card_normal = board['card_normal']
-    print(card_normal[0])
-    print(card_point[0])
 
     target = card_point[0]['give_back']
     total = sum(list(target.values()))

@@ -123,9 +123,9 @@ class Century():
                     )
             self.turn += 1
 
-            if self.turn == 2:
-                data_player[0].count_card = 5
-                data_player[0].count_point = 40
+            # if self.turn == 2:
+            #     data_player[0].count_card = 5
+            #     data_player[0].count_point = 40
 
         id_win = check_player_win(data_player)
         show_point_players(data_player, id_win)

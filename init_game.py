@@ -64,26 +64,21 @@ def stop_game(players):
     return False
 
 def check_player_win(players):
-    id_win = []
+    id_win = 1
+    max_point = players[0].count_point + sum(list(players[0].material.values())[1:])
 
-    max_point = players[0].count_point
     for i in range(1, len(players)):
-        if players[i].count_point > max_point:
-            max_point = players[i].count_point
-    
-    for i in range(len(players)-1, -1, -1):
-        if players[i].count_point == max_point:
-            id_win.append(i+1)
-            break
+        if players[i].count_point + sum(list(players[i].material.values())[1:]) >= max_point:
+            max_point = players[i].count_point + sum(list(players[i].material.values())[1:])
+            id_win = i + 1
 
     return id_win
 
 def show_point_players(players, id):
     for i in range(len(players)):
-        print(f'NGƯỜI CHƠI {i+1} CÓ {players[i].count_point} ĐIỂM')
+        print(f'NGƯỜI CHƠI {i+1} CÓ {players[i].count_point + sum(list(players[i].material.values())[1:])} ĐIỂM')
 
-    for i in id:
-        print(f'NGƯỜI CHƠI THỨ {i} CHIẾN THẮNG')
+    print(f'NGƯỜI CHƠI THỨ {id} CHIẾN THẮNG')
 
 
 def check_dict(dt):
@@ -116,9 +111,6 @@ def check_action(action):
     if len(action) == 2 and action[0] == 'get_card_point' and check_card(action[1]) == 'card_point':
         return True
 
-    if len(action) == 4 and action[0] == 'get_card_normal' and check_card(action[1]) == 'card_normal' and check_dict(action[2]) and check_dict(action[2]):
-        return True
-
     if len(action) == 3 and action[0] == 'card_get_material' and check_card(action[1]) == 'card_normal' and check_dict((action[2])):
         return True
 
@@ -128,6 +120,8 @@ def check_action(action):
     if len(action) == 4 and action[0] == 'card_exchange' and check_card(action[1]) == 'card_normal' and type(action[2]) == type(int(1)) and check_dict(action[3]):
         return True
 
+    if len(action) == 4 and action[0] == 'get_card_normal' and check_card(action[1]) == 'card_normal' and check_dict(action[2]) and check_dict(action[3]):
+        return True
     return False
 
 def check_get_card_point(m, card):
