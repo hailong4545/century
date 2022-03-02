@@ -84,7 +84,7 @@ class Century():
                         ps_pos = 0
                         while ps_pos < pos:
                             if material_giveback[color[st]] != 0:
-                                self.card_normal_open['bonus'][color[st]] += 1
+                                self.card_normal_open[ps_pos]['bonus'][color[st]] += 1
                                 material_giveback[color[st]] -= 1
                                 ps_pos += 1
                             else:
