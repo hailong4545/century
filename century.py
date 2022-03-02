@@ -72,11 +72,11 @@ class Century():
 
                     card = action_player[1].copy()
                     material_giveback = action_player[2].copy()
-                    material_giveback = action_player[3].copy()
+                    material_giveback2 = action_player[3].copy()
                     all_card = self.card_normal_open.copy()
                     pos = self.card_normal_open.index(card)
 
-                    player.get_card_normal(card, material_giveback, all_card, pos)
+                    player.get_card_normal(card, material_giveback, material_giveback2, all_card, pos)
 
                     if pos != 0:
                         color = ['yellow', 'red', 'green', 'brown']
