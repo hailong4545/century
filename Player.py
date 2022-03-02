@@ -67,7 +67,7 @@ class Player():
                 raise Exception(f'NGƯỜI CHƠI {self.id} CODE BOT LỖI: KHÔNG ĐỦ NGUYÊN LIỆU ĐỂ TRAO ĐỔI')
         
         for cl in self.material.keys():
-            self.material[cl] += times * (card['receive'][cl] - card['giveback'][cl])
+            self.material[cl] += times * (card['receive'][cl] - card['give_back'][cl])
 
         for cl in self.material.keys():
             self.material[cl] -= material_remove[cl]
