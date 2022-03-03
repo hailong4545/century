@@ -40,7 +40,7 @@ class Player():
                 raise Exception(f'NGƯỜI CHƠI {self.id} CODE BOT LỖI: KHÔNG CÓ ĐỦ NGUYÊN LIỆU ĐỂ LẤY THẺ')
 
         for cl in self.material.keys():
-            self.material[cl] += card['bonus'][cl] - material_giveback2[cl]
+            self.material[cl] += card['bonus'][cl] - material_giveback2[cl]- material_giveback[cl]
 
         if sum(list(self.material.values())) > 10:
             raise Exception(f'NGƯỜI CHƠI {self.id} CODE BOT LỖI: Nguyên liệu vượt quá 10')
