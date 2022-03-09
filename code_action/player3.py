@@ -18,24 +18,25 @@
 from init_game import convert
 import numpy as np
 
-# convert thẻ normal
-def dich_the_n(card):
+# convert thẻ điểm và normal
+def dich_the(card):
+    if "upgrade" not in card.keys():
+        give = np.array(list(card["give_back"].values()))
+        point = card['receive']
+        rei = np.array([0,0,0,0])
+        return give,rei,1,point
     receive = np.array(list(card["receive"].values()))
     give = np.array(list(card["give_back"].values()))
     times = card["times"]
     upgrade = card["upgrade"]
     return give,receive,times,upgrade
 
-# convert thẻ điểm
-def dich_the_p(card):
-    give = np.array(list(card["give_back"].values()))
-    point = card['receive']
-    return give,point
 
 # từ 1 thẻ normal đến list mọi states có thể
-def card_to_state(hand,the):
-    give,rei,upgrade,bonus,times = dich_the_n(the)
-    if upgrade > 0:
+def card_to_state(hand,the,score,turn):
+    give,rei,times,upgrade = dich_the(the)
+    # nếu là thẻ upgrade
+    if upgrade > 0 and upgrade < 5:
         return full_upgrade(hand,upgrade)
     card = [give,rei]
     max = times
@@ -45,7 +46,8 @@ def card_to_state(hand,the):
             times = hand[idnl]//card[0][idnl]
             if times < max:
                 max = times
-    # lần = 0
+    # nếu không phải thẻ upgrade
+    score += upgrade
     for lan in range(max):
         state = hand - card[0]*(lan+1) + card[1]*(lan+1)
         while sum(state) > 10:
@@ -53,7 +55,7 @@ def card_to_state(hand,the):
             for idnl in range(4):
                 state[idnl] -= min(thua,state[idnl])
         states.append(state)
-    return states
+    return states,score, turn + 1
 
 # nâng cấp 1 lần
 def state_to_states(state):
@@ -80,8 +82,9 @@ def full_upgrade(state,upgrade):
     return full
 
 def action(player, board):
-    for card in board['card_point']:
-        print(dich_the_p(card))
+    hand = np.array(list(player.material.values()))
+    for card in (player.card_close+board['card_normal']):
+        print(card)
     return 'relax'
 
                  
