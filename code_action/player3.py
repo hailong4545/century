@@ -84,7 +84,7 @@ def full_upgrade(state,upgrade):
 def action(player, board):
     hand = np.array(list(player.material.values()))
     # for card in (player.card_close+board['card_normal']):
-        # print(card)
+        # print(card)0
     return 'relax'
 
                  
