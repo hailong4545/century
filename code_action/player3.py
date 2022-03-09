@@ -128,19 +128,21 @@ def the_doi_nl(hand,target,giv,re):
 
 
 def action(player, board):
+    level = 5
     hand = np.array(list(player.material.values()))
-    for card_normal in board['card_normal']:
-        id_card = board['card_normal'].index(card_normal)
-        give, rei, times,upgrade = dich_the(card_normal)
-        if rei[0] > 0 and sum(give) == 1 and hand[0] >= id_card:
-            print("thẻ sinh vàng")
-            return 'get_card_normal', card_normal, convert(str(id_card) + "-0-0-0"),convert("0-0-0-0")
-        if sum(give) == 0 and hand[0] >= id_card:
-            print("lấy thẻ free")
-            return 'get_card_normal', card_normal, convert(str(id_card) + "-0-0-0"),convert("0-0-0-0")
-        if give[0] > 0 and sum(give*np.array([0,1,1,1])) == 0 and hand[0] >= id_card:
-            print("thẻ đổi vàng")
-            return 'get_card_normal', card_normal, convert(str(id_card) + "-0-0-0"),convert("0-0-0-0")
+    if len(player.card_close + player.card_open) <level:
+        for card_normal in board['card_normal']:
+            id_card = board['card_normal'].index(card_normal)
+            give, rei, times,upgrade = dich_the(card_normal)
+            if rei[0] > 0 and sum(give) == 1 and hand[0] >= id_card:
+                print("thẻ sinh vàng")
+                return 'get_card_normal', card_normal, convert(str(id_card) + "-0-0-0"),convert("0-0-0-0")
+            if sum(give) == 0 and hand[0] >= id_card:
+                print("lấy thẻ free")
+                return 'get_card_normal', card_normal, convert(str(id_card) + "-0-0-0"),convert("0-0-0-0")
+            if give[0] > 0 and sum(give*np.array([0,1,1,1])) == 0 and hand[0] >= id_card:
+                print("thẻ đổi vàng")
+                return 'get_card_normal', card_normal, convert(str(id_card) + "-0-0-0"),convert("0-0-0-0")
     cards = player.card_close+board['card_point']
     score_max = 0
     card_use = None
@@ -157,13 +159,14 @@ def action(player, board):
                 score_max = evaluate
                 card_use = card
                 target_state = state
-    if score_max < 2.0:
+    if score_max < 1.9:
         print("nghỉ")
         return "relax"
     # print(score_max,target_state,dich_the(card_use))
     give, rei, times,upgrade = dich_the(card_use)
     # nếu target thẻ điểm
     if upgrade > 5:
+        print("mua thẻ điểm")
         return 'get_card_point', card_use
     # nếu target thẻ normal
     else:
