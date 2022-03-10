@@ -125,7 +125,11 @@ def the_doi_nl(hand,target,giv,re):
     tra_ve = "-".join([str(a) for a in tra_ve])
     return times,tra_ve
 
-
+def the_lay_free(hand,target,giv,re):
+    x = target-hand
+    tra_ve = re - x
+    tra_ve = "-".join([str(a) for a in tra_ve])
+    return tra_ve
 
 def action(player, board):
     level = 5
@@ -159,8 +163,8 @@ def action(player, board):
                 score_max = evaluate
                 card_use = card
                 target_state = state
-    if score_max < 1.9:
-        print("nghỉ")
+    if score_max < 1:
+        print("nghỉ 1",score_max)
         return "relax"
     # print(score_max,target_state,dich_the(card_use))
     give, rei, times,upgrade = dich_the(card_use)
@@ -170,22 +174,23 @@ def action(player, board):
         return 'get_card_point', card_use
     # nếu target thẻ normal
     else:
-        tra,lay = hand_to_target(hand,target_state)
         if upgrade > 0:
+            tra,lay = hand_to_target(hand,target_state)
             print("nâng cấp " + str(upgrade) + " lần")
             return 'card_update', card_use, convert(tra), convert(lay)
         if sum(give) == 0:
             print("lấy free")
+            tra = the_lay_free(hand,target_state,give,rei)
             return 'card_get_material', card_use, convert(tra)
         else:
             print("đổi nguyên liệu")
             lan,tra_ve = the_doi_nl(hand,target_state,give,rei)
             return 'card_exchange', card_use, lan, convert(tra_ve)
     if len(player.card_close) == 0:
-        print("nghỉ")
+        print("nghỉ 2")
         return "relax"
     # print(future([[[hand],cards,0,0]],1,len(cards)+1,0,start_score))
-    print("nghỉ")
+    print("nghỉ 3")
     return 'relax'
 
                  
