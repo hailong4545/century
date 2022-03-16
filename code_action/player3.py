@@ -47,6 +47,8 @@ def card_to_state(hand,the,score):
             if times < max:
                 max = times
     # nếu không phải thẻ upgrade
+    if np.min(hand-give) <0:
+        return [],0
     score += upgrade
     for lan in range(max):
         state = hand - card[0]*(lan+1) + card[1]*(lan+1)
@@ -82,7 +84,7 @@ def full_upgrade(state,upgrade):
     return full
 
 
-def future(start_items,turn,terminate,max_score,start_score):
+def future(start_items,turn,terminate,max_score,start_score,full_hand):
     # print(turn,max_score)
     if turn == terminate:
         return max_score,turn,start_score
@@ -93,15 +95,24 @@ def future(start_items,turn,terminate,max_score,start_score):
         point = it[2]
         for f in fn:
             for the in cards:
-                states, new_score = card_to_state(f,the,point)
-                for state in states:
-                    eval_score = (sum(state*np.array([1,2,3,4])) + point- start_score)/turn
-                    if eval_score > max_score:
-                        max_score = eval_score 
-                new_cards = [car for car in cards if car != the]
-                item = [states,new_cards,point + new_score]
-                items.append(item)
-    return future(items,turn + 1,terminate,max_score,start_score)
+                if "times" in the.keys() and the["times"] == 100:
+                    states = [f]
+                    new_cards = full_hand
+                    item = [states,new_cards,point]
+                    items.append(item)
+                else:
+                    states, new_score = card_to_state(f,the,point)
+                    if len(states) == 0:
+                        a = 0
+                    else:
+                        for state in states:
+                            eval_score = (sum(state*np.array([1,2,3,4])) + point- start_score)/turn
+                            if eval_score > max_score:
+                                max_score = eval_score 
+                        new_cards = [car for car in cards if car != the]
+                        item = [states,new_cards,point + new_score]
+                        items.append(item)
+    return future(items,turn + 1,terminate,max_score,start_score,full_hand)
 
 def hand_to_target(hand,target):
     x = target-hand
@@ -132,7 +143,7 @@ def the_lay_free(hand,target,giv,re):
     return tra_ve
 
 def action(player, board):
-    level = 5
+    level = 10
     hand = np.array(list(player.material.values()))
     if len(player.card_close + player.card_open) <level:
         for card_normal in board['card_normal']:
@@ -147,18 +158,27 @@ def action(player, board):
             if give[0] > 0 and sum(give*np.array([0,1,1,1])) == 0 and hand[0] >= id_card:
                 print("thẻ đổi vàng")
                 return 'get_card_normal', card_normal, convert(str(id_card) + "-0-0-0"),convert("0-0-0-0")
-    cards = player.card_close+board['card_point']
+    rest = {'give_back': {'yellow': 0, 'red': 0, 'green': 0, 'brown': 0}, 'receive': {'yellow': 0, 'red': 0, 'green': 0, 'brown': 0}, 'upgrade': 0, 'times': 100, 'bonus': {'yellow': 0, 'red': 0, 'green': 0, 'brown': 0}}
+    full_hand = player.card_close + player.card_open + board['card_point'] + [rest]
+    cards = player.card_close+board['card_point'] + [rest]
     score_max = 0
     card_use = None
     start_score = sum(hand*np.array([1,2,3,4]))
-    ter = len(cards) + 1
+    ter = 4
     target_state = None
     for card in cards:
+        if "times" in card.keys() and card["times"] == 100:
+            item = [[hand],full_hand,0]
+            evaluate,b,c = future([item],1,ter,0,start_score,full_hand)
+            if evaluate > score_max:
+                score_max = evaluate
+                card_use = card
+                target_state = hand
         states, diem  = card_to_state(hand,card,0)
         new_cards = [car for car in cards if car != card]
         for state in states:
             item = [[state],new_cards,diem]
-            evaluate,b,c = future([item],1,ter,0,start_score)
+            evaluate,b,c = future([item],1,ter,0,start_score,full_hand)
             if evaluate > score_max:
                 score_max = evaluate
                 card_use = card
@@ -168,9 +188,13 @@ def action(player, board):
         return "relax"
     # print(score_max,target_state,dich_the(card_use))
     give, rei, times,upgrade = dich_the(card_use)
+    # nếu target thẻ nghỉ
+    if times == 100:
+        print("nghỉ 4")
+        return "relax"
     # nếu target thẻ điểm
     if upgrade > 5:
-        print("mua thẻ điểm")
+        print("mua thẻ điểm",card_use)
         return 'get_card_point', card_use
     # nếu target thẻ normal
     else:

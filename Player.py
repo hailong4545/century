@@ -1,6 +1,6 @@
 from read_data_game import convert
 from init_game import setDefault
-from code_action import player6 as p1, player2 as p2, player2 as p3, player4 as p4, player5 as p5
+from code_action import player6 as p1, player2 as p2, player2 as p3, player2 as p4, player2 as p5
 from copy import deepcopy
 
 class Player():
