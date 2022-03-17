@@ -24,7 +24,7 @@ from code_action.player1 import action as act_after
 def action(player, board):
     hand = np.array(list(player.material.values()))
     act = None
-    if len(player.card_close + player.card_open) < 5:
+    if len(player.card_close + player.card_open) < 10:
         with open('card_list.json', 'r') as openfile:
             card_list = json.load(openfile)
         score_table = np.zeros(46)

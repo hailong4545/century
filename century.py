@@ -141,5 +141,24 @@ for player in range(1,6):
         outfile.write(json_object)
 game = Century()
 game.run
+#đọc file học của người thắng
+for player in range(1,6):
+    learning_rate = 0.9
+    if str(player) == str(game.win):
+        learning_rate = 1.1
+    with open("p" + str(player) + "learning.json") as openfile:
+        learning = json.load(openfile)
+        for obs in learning.keys():
+            if "hand" not in obs:
+                path = "RL/card" + str(obs) + ".json"
+            else:
+                path = "RL/" + str(obs) + ".json"
+            with open(path) as openfile:
+                data = json.load(openfile) 
+            for acted in learning[obs]:
+                data[acted] *= learning_rate
+            new_data = json.dumps(data)
+            with open(path, "w") as outfile:
+                outfile.write(new_data)
 print(game.turn,game.win)
 
