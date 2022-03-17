@@ -20,6 +20,9 @@ import numpy as np
 import json
 
 def action(player, board):
+    with open('RL/card0.json', 'r') as openfile:
+        cards = json.load(openfile)
+    print(len(cards))
     return "relax"
                  
 
