@@ -15,11 +15,12 @@
             các key là các màu của nguyên liệu(yellow,...)
             value là số nguyên liệu tương ứng
 '''
+from init_game import convert
+import numpy as np
+import json
 
 def action(player, board):
-    return 'relax'
-
-
+    return "relax"
                  
 
 
