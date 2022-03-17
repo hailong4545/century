@@ -14,6 +14,7 @@ class Century():
         self.card_normal_open = self.all_card_normal[:6]
         self.card_point_open = setBonus(self.all_card_point[:5], self.coins)
         self.turn = 1
+        self.win = None
 
     @property
     def run(self):
@@ -127,11 +128,18 @@ class Century():
             #     data_player[0].count_card = 5
             #     data_player[0].count_point = 40
 
+
         id_win = check_player_win(data_player)
+        self.win = id_win
         show_point_players(data_player, id_win)
         # print(data_player[2].material)
 
-
+import json
+json_object = json.dumps({})
+for player in range(1,6):
+    with open("p"+ str(player) + "learning.json", "w") as outfile:
+        outfile.write(json_object)
 game = Century()
 game.run
+print(game.turn,game.win)
 
