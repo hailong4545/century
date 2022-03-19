@@ -143,7 +143,7 @@ game = Century()
 game.run
 #đọc file học của người thắng
 for player in range(1,6):
-    learning_rate = 0.9
+    learning_rate = 0.98
     if str(player) == str(game.win):
         learning_rate = 1.1
     with open("p" + str(player) + "learning.json") as openfile:
