@@ -47,6 +47,9 @@ class Century():
                 if not check_action(action_player):
                     print(action_player)
                     raise Exception(f'NGƯỜI CHƠI {player.id} OUTPUT RA SAI SỬA ĐI')
+                else:
+                    print(action_player)
+
 
                 if action_player[0] == "relax":
                     player.relax
@@ -61,8 +64,8 @@ class Century():
                         self.coins['gold'] -= 1
 
                     self.card_point_open.remove(action_player[1])
-                    self.card_point_open += [self.card_point_close[-1]]
-                    self.card_point_close.pop()
+                    self.card_point_open += [self.card_point_close[0]]+self.card_point_open
+                    self.card_point_close.pop(0)
 
                     self.card_point_open = setBonus(self.card_point_open, self.coins)
 
@@ -94,8 +97,8 @@ class Century():
                     self.card_normal_open.remove(card)
 
                     if len(self.card_normal_close) != 0:
-                        self.card_normal_open.append(self.card_normal_close[-1])
-                        self.card_normal_close.pop()
+                        self.card_normal_open.append(self.card_normal_close[0])
+                        self.card_normal_close.pop(0)
 
                 elif action_player[0] == "card_update":
                     card = action_player[1].copy()
@@ -134,4 +137,3 @@ class Century():
 
 game = Century()
 game.run
-
