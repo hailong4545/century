@@ -172,7 +172,7 @@ def action(player, board):
     rest = {'give_back': {'yellow': 0, 'red': 0, 'green': 0, 'brown': 0}, 'receive': {'yellow': 0, 'red': 0, 'green': 0, 'brown': 0}, 'upgrade': 0, 'times': 100, 'bonus': {'yellow': 0, 'red': 0, 'green': 0, 'brown': 0}}
     full_hand = player.card_close + player.card_open + board['card_point'] + [rest]
     cards = player.card_close+board['card_point'] + [rest]
-    da_mua = len(player.card_point)
+    da_mua = 0
     score_max = 0
     card_use = None
     start_score = sum(hand*np.array([1,2,3,4]))
