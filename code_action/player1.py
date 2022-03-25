@@ -262,31 +262,31 @@ def action(player, board):
         action_available.append(None)
         matrix_available.append(score_table[-1])
         act = random.choices(action_available,weights = matrix_available)[0]
-        if act == None:
-            id_act = -1
-        else:
-            card1 = act.copy()
-            card1['bonus'] = 0
-            id_act = card_list.index(card1)
-        with open("p1learning.json") as openfile:
-            action_dict = json.load(openfile)
-        for card in card_observed:
-            card1 = card.copy()
-            card1['bonus'] = 0
-            index = str(card_list.index(card1))
-            if index not in action_dict.keys():
-                action_dict[index] = [id_act]
-            else:
-                action_dict[index].append(id_act)
-        index = "hand" + str(so_card)
-        if index not in action_dict.keys():
-            action_dict[index] = [id_act]
-        else:
-            action_dict[index].append(id_act)
-        # print(action_dict)
-        a = json.dumps(action_dict)
-        with open("p1learning.json", "w") as outfile:
-            outfile.write(a)
+#         if act == None:
+#             id_act = -1
+#         else:
+#             card1 = act.copy()
+#             card1['bonus'] = 0
+#             id_act = card_list.index(card1)
+#         with open("p1learning.json") as openfile:
+#             action_dict = json.load(openfile)
+#         for card in card_observed:
+#             card1 = card.copy()
+#             card1['bonus'] = 0
+#             index = str(card_list.index(card1))
+#             if index not in action_dict.keys():
+#                 action_dict[index] = [id_act]
+#             else:
+#                 action_dict[index].append(id_act)
+#         index = "hand" + str(so_card)
+#         if index not in action_dict.keys():
+#             action_dict[index] = [id_act]
+#         else:
+#             action_dict[index].append(id_act)
+#         # print(action_dict)
+#         a = json.dumps(action_dict)
+#         with open("p1learning.json", "w") as outfile:
+#             outfile.write(a)
     if act == None:
         return act_after(player,board)
     else:
