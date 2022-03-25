@@ -15,14 +15,11 @@
             các key là các màu của nguyên liệu(yellow,...)
             value là số nguyên liệu tương ứng
 '''
-
-name = '1'
-
 from init_game import convert
 import numpy as np
 import json
 import random
-
+name = "1"
 # convert thẻ điểm và normal
 def dich_the(card):
     if "upgrade" not in card.keys():
@@ -301,7 +298,4 @@ def action(player, board):
                  
 
 
-
-
-
-
+            
