@@ -157,20 +157,22 @@ def action(player, board):
         for card_normal in board['card_normal']:
             id_card = board['card_normal'].index(card_normal)
             give, rei, times,upgrade = dich_the(card_normal)
-            if rei[0] > 0 and sum(give) == 1 and hand[0] >= id_card:
-                # print("thẻ sinh vàng")
-                return 'get_card_normal', card_normal, convert(str(id_card) + "-0-0-0"),convert("0-0-0-0")
+            tra_ve = (sum(card_normal['bonus'].values()) + sum(hand)) - 10
+            if tra_ve < 0:
+                tra_ve = 0
             if sum(give) == 0 and hand[0] >= id_card:
                 # print("lấy thẻ free")
-                return 'get_card_normal', card_normal, convert(str(id_card) + "-0-0-0"),convert("0-0-0-0")
+                return 'get_card_normal', card_normal, convert(str(id_card) + "-0-0-0"),convert(str(tra_ve) + "-0-0-0")
+            if rei[0] > 0 and sum(give) == 1 and hand[0] >= id_card:
+                # print("thẻ sinh vàng")
+                return 'get_card_normal', card_normal, convert(str(id_card) + "-0-0-0"),convert(str(tra_ve) + "-0-0-0")
             if give[0] > 0 and sum(give*np.array([0,1,1,1])) == 0 and hand[0] >= id_card:
                 # print("thẻ đổi vàng")
-                return 'get_card_normal', card_normal, convert(str(id_card) + "-0-0-0"),convert("0-0-0-0")
+                return 'get_card_normal', card_normal, convert(str(id_card) + "-0-0-0"),convert(str(tra_ve) + "-0-0-0")
     rest = {'give_back': {'yellow': 0, 'red': 0, 'green': 0, 'brown': 0}, 'receive': {'yellow': 0, 'red': 0, 'green': 0, 'brown': 0}, 'upgrade': 0, 'times': 100, 'bonus': {'yellow': 0, 'red': 0, 'green': 0, 'brown': 0}}
     full_hand = player.card_close + player.card_open + board['card_point'] + [rest]
     cards = player.card_close+board['card_point'] + [rest]
-#     da_mua = len(player.card_point)
-    da_mua = 0
+    da_mua = len(player.card_point)
     score_max = 0
     card_use = None
     start_score = sum(hand*np.array([1,2,3,4]))
@@ -230,7 +232,4 @@ def action(player, board):
                  
 
 
-
-
-
-
+            
