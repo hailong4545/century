@@ -190,7 +190,7 @@ def action(player, board):
                 card_use = card
                 target_state = state
     if score_max < 1:
-        print("nghỉ 1",score_max)
+        # print("nghỉ 1",score_max)
         return "relax"
     # print(score_max,target_state,dich_the(card_use))
     give, rei, times,upgrade = dich_the(card_use)

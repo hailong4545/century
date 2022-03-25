@@ -75,8 +75,8 @@ def check_player_win(players):
     return id_win
 
 def show_point_players(players, id):
-    for i in range(len(players)):
-        print(f'NGƯỜI CHƠI {i+1} CÓ {players[i].count_point + sum(list(players[i].material.values())[1:])} ĐIỂM')
+    # for i in range(len(players)):
+        # print(f'NGƯỜI CHƠI {i+1} CÓ {players[i].count_point + sum(list(players[i].material.values())[1:])} ĐIỂM')
 
     print(f'NGƯỜI CHƠI THỨ {id} CHIẾN THẮNG')
 

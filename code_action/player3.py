@@ -17,6 +17,7 @@
 '''
 from init_game import convert
 import numpy as np
+from code_action.player1 import action as act_after
 
 # convert thẻ điểm và normal
 def dich_the(card):
@@ -150,73 +151,15 @@ def action(player, board):
             id_card = board['card_normal'].index(card_normal)
             give, rei, times,upgrade = dich_the(card_normal)
             if rei[0] > 0 and sum(give) == 1 and hand[0] >= id_card:
-                print("thẻ sinh vàng")
+                # print("thẻ sinh vàng")
                 return 'get_card_normal', card_normal, convert(str(id_card) + "-0-0-0"),convert("0-0-0-0")
             if sum(give) == 0 and hand[0] >= id_card:
-                print("lấy thẻ free")
+                # print("lấy thẻ free")
                 return 'get_card_normal', card_normal, convert(str(id_card) + "-0-0-0"),convert("0-0-0-0")
             if give[0] > 0 and sum(give*np.array([0,1,1,1])) == 0 and hand[0] >= id_card:
-                print("thẻ đổi vàng")
+                # print("thẻ đổi vàng")
                 return 'get_card_normal', card_normal, convert(str(id_card) + "-0-0-0"),convert("0-0-0-0")
-    rest = {'give_back': {'yellow': 0, 'red': 0, 'green': 0, 'brown': 0}, 'receive': {'yellow': 0, 'red': 0, 'green': 0, 'brown': 0}, 'upgrade': 0, 'times': 100, 'bonus': {'yellow': 0, 'red': 0, 'green': 0, 'brown': 0}}
-    full_hand = player.card_close + player.card_open + board['card_point'] + [rest]
-    cards = player.card_close+board['card_point'] + [rest]
-    score_max = 0
-    card_use = None
-    start_score = sum(hand*np.array([1,2,3,4]))
-    ter = 4
-    target_state = None
-    for card in cards:
-        if "times" in card.keys() and card["times"] == 100:
-            item = [[hand],full_hand,0]
-            evaluate,b,c = future([item],1,ter,0,start_score,full_hand)
-            if evaluate > score_max:
-                score_max = evaluate
-                card_use = card
-                target_state = hand
-        states, diem  = card_to_state(hand,card,0)
-        new_cards = [car for car in cards if car != card]
-        for state in states:
-            item = [[state],new_cards,diem]
-            evaluate,b,c = future([item],1,ter,0,start_score,full_hand)
-            if evaluate > score_max:
-                score_max = evaluate
-                card_use = card
-                target_state = state
-    if score_max < 1:
-        print("nghỉ 1",score_max)
-        return "relax"
-    # print(score_max,target_state,dich_the(card_use))
-    give, rei, times,upgrade = dich_the(card_use)
-    # nếu target thẻ nghỉ
-    if times == 100:
-        print("nghỉ 4")
-        return "relax"
-    # nếu target thẻ điểm
-    if upgrade > 5:
-        print("mua thẻ điểm",card_use)
-        return 'get_card_point', card_use
-    # nếu target thẻ normal
-    else:
-        if upgrade > 0:
-            tra,lay = hand_to_target(hand,target_state)
-            print("nâng cấp " + str(upgrade) + " lần")
-            return 'card_update', card_use, convert(tra), convert(lay)
-        if sum(give) == 0:
-            print("lấy free")
-            tra = the_lay_free(hand,target_state,give,rei)
-            return 'card_get_material', card_use, convert(tra)
-        else:
-            print("đổi nguyên liệu")
-            lan,tra_ve = the_doi_nl(hand,target_state,give,rei)
-            return 'card_exchange', card_use, lan, convert(tra_ve)
-    if len(player.card_close) == 0:
-        print("nghỉ 2")
-        return "relax"
-    # print(future([[[hand],cards,0,0]],1,len(cards)+1,0,start_score))
-    print("nghỉ 3")
-    return 'relax'
-
+    return act_after(player,board)
                  
 
 
