@@ -17,6 +17,8 @@
 '''
 from init_game import convert, check_get_card_point
 
+name = '2'
+
 def action(player, board):
     card_point = board['card_point']
     card_normal = board['card_normal']

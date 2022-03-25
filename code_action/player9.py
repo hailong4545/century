@@ -15,8 +15,7 @@
             các key là các màu của nguyên liệu(yellow,...)
             value là số nguyên liệu tương ứng
 '''
-
-name = '1'
+name = '9'
 
 def action(player, board):
     return 'relax'

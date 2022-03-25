@@ -1,7 +1,7 @@
 from read_data_game import convert
 from init_game import setDefault
-from code_action import player6 as p1, player2 as p2, player3 as p3, player4 as p4, player5 as p5
 from copy import deepcopy
+
 
 class Player():
 
@@ -40,7 +40,7 @@ class Player():
                 raise Exception(f'NGƯỜI CHƠI {self.id} CODE BOT LỖI: KHÔNG CÓ ĐỦ NGUYÊN LIỆU ĐỂ LẤY THẺ')
 
         for cl in self.material.keys():
-            self.material[cl] += card['bonus'][cl] - material_giveback2[cl]
+            self.material[cl] += card['bonus'][cl] - material_giveback2[cl] - material_giveback[cl]
 
         if sum(list(self.material.values())) > 10:
             raise Exception(f'NGƯỜI CHƠI {self.id} CODE BOT LỖI: Nguyên liệu vượt quá 10')
@@ -67,7 +67,7 @@ class Player():
                 raise Exception(f'NGƯỜI CHƠI {self.id} CODE BOT LỖI: KHÔNG ĐỦ NGUYÊN LIỆU ĐỂ TRAO ĐỔI')
         
         for cl in self.material.keys():
-            self.material[cl] += times * (card['receive'][cl] - card['giveback'][cl])
+            self.material[cl] += times * (card['receive'][cl] - card['give_back'][cl])
 
         for cl in self.material.keys():
             self.material[cl] -= material_remove[cl]
@@ -90,6 +90,7 @@ class Player():
 
         for cl in self.material.keys():
             if self.material[cl] < material_giveback[cl]:
+                print(card, material_giveback, material_recevie)
                 raise Exception(f'NGƯỜI CHƠI {self.id} CODE BOT LỖI: KHÔNG ĐỦ NGUYÊN LIỆU ĐỂ TRAO ĐỔI')
         
         color = {'yellow': 1, 'red': 2, 'green': 3, 'brown': 4}
@@ -129,18 +130,18 @@ class Player():
         self.card_open.append(card)
     
 
-    def action(self, board):
-        if self.id == 1:
-            return p1.action(deepcopy(self), board)
-        elif self.id == 2:
-            return p2.action(deepcopy(self), board)
-        elif self.id == 3:
-            return p3.action(deepcopy(self), board)
-        elif self.id == 4:
-            return p4.action(deepcopy(self), board)
-        elif self.id == 5:
-            return p5.action(deepcopy(self), board)
-
+    def action(self, board, p):
+        # if self.id == 1:
+        #     return p1.action(deepcopy(self), board)
+        # elif self.id == 2:
+        #     return p2.action(deepcopy(self), board)
+        # elif self.id == 3:
+        #     return p3.action(deepcopy(self), board)
+        # elif self.id == 4:
+        #     return p4.action(deepcopy(self), board)
+        # elif self.id == 5:
+        #     return p5.action(deepcopy(self), board)
+        return p[self.id-1].action(deepcopy(self), board)
         
 
     

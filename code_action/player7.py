@@ -16,7 +16,7 @@
             value là số nguyên liệu tương ứng
 '''
 
-name = '1'
+name = '7'
 
 def action(player, board):
     return 'relax'
