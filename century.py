@@ -140,6 +140,8 @@ testCase = creatCase()
 try:
     df = pf.read_csv('ketqua.csv')
     index = len(df)
+    df['players'] = list(df['players'])
+    df['rank'] = list(df['rank'])
 except:
     df = {}
     df['players'] = []
@@ -152,7 +154,7 @@ for i in range(index, len(testCase)):
     rank = game.run
     data_rank = ''.join(rank)
     data_name = ''.join(list(map(lambda x: x.name, testCase[i])))
-    df['players'] = list(df['players']) + [data_name]
-    df['rank'] = list(df['rank']) + [data_rank]
-    df = pd.DataFrame(df)
-    df.to_csv('ketqua.csv', index=False)
+    df['players'].append(data_name)
+    df['rank'].append(data_rank)
+    df_ = pd.DataFrame(df)
+    df_.to_csv('ketqua.csv', index=False)
