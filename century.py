@@ -1,12 +1,13 @@
+import pandas as pd
+
 from read_data_game import *
 from init_game import *
 from Player import *
 from copy import deepcopy
 
-
 class Century():
 
-    def __init__(self):
+    def __init__(self, action_player):
         self.coins = {'gold': 10, 'silver': 10}
         self.all_card_normal, self.all_card_point = initGame(*readDataGame())
         self.card_point_close = self.all_card_point[5:]
@@ -14,6 +15,7 @@ class Century():
         self.card_normal_open = self.all_card_normal[:6]
         self.card_point_open = setBonus(self.all_card_point[:5], self.coins)
         self.turn = 1
+        self.action_player = action_player
 
     @property
     def run(self):
@@ -38,18 +40,18 @@ class Century():
                               'card_point': self.card_point_open.copy(), 'players': ps_players}
 
 
-                action_player = player.action(board_game)
-                # print(action_player)
+                action_player = player.action(board_game, self.action_player)
 
                 if type(action_player) == type('string'):
                     action_player = [action_player]
 
+                #in action của người chơi
                 if not check_action(action_player):
-                    print(action_player)
+                    # print(action_player)
                     raise Exception(f'NGƯỜI CHƠI {player.id} OUTPUT RA SAI SỬA ĐI')
                 else:
-                    print(action_player)
-
+                    # print(action_player)
+                    pass
 
                 if action_player[0] == "relax":
                     player.relax
@@ -64,7 +66,7 @@ class Century():
                         self.coins['gold'] -= 1
 
                     self.card_point_open.remove(action_player[1])
-                    self.card_point_open += [self.card_point_close[0]]+self.card_point_open
+                    self.card_point_open = [self.card_point_close[0]]+self.card_point_open
                     self.card_point_close.pop(0)
 
                     self.card_point_open = setBonus(self.card_point_open, self.coins)
@@ -130,10 +132,29 @@ class Century():
             #     data_player[0].count_card = 5
             #     data_player[0].count_point = 40
 
-        id_win = check_player_win(data_player)
-        show_point_players(data_player, id_win)
-        # print(data_player[2].material)
+        rank = check_player_win(data_player)
+        show_point_players(rank)
+        return rank
 
+testCase = creatCase()
+try:
+    df = pf.read_csv('ketqua.csv')
+    index = len(df)
+    df['players'] = list(df['players'])
+    df['rank'] = list(df['rank'])
+except:
+    df = {}
+    df['players'] = []
+    df['rank'] = []
+    index = 0
 
-game = Century()
-game.run
+for i in range(index, len(testCase)):
+    print(f'Ván {i+1}')
+    game = Century(testCase[i])
+    rank = game.run
+    data_rank = ''.join(rank)
+    data_name = ''.join(list(map(lambda x: x.name, testCase[i])))
+    df['players'].append(data_name)
+    df['rank'].append(data_rank)
+    df_ = pd.DataFrame(df)
+    df_.to_csv('ketqua.csv', index=False)

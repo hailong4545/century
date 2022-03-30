@@ -11,16 +11,6 @@ def initGame(data_card_normal, data_card_point):
         data_card_normal[i]['bonus'] = convert('0-0-0-0')
 
     return list(data_card_normal), list(data_card_point)
-#
-# def setBonus(data_card_point, conis):
-#     if conis['gold'] == 0:
-#         data_card_point[-1]['bonus'] = 1
-#     else:
-#         data_card_point[-1]['bonus'] = 3
-#         data_card_point[-2]['bonus'] = 1
-#
-#     return data_card_point
-
 
 def setBonus(data_card_point, conis):
     if conis['gold'] != 0 and conis['silver'] != 0:
@@ -64,21 +54,15 @@ def stop_game(players):
     return False
 
 def check_player_win(players):
-    id_win = 1
-    max_point = players[0].count_point + sum(list(players[0].material.values())[1:])
-
-    for i in range(1, len(players)):
-        if players[i].count_point + sum(list(players[i].material.values())[1:]) >= max_point:
-            max_point = players[i].count_point + sum(list(players[i].material.values())[1:])
-            id_win = i + 1
-
-    return id_win
-
-def show_point_players(players, id):
+    rank = 5 * [0]
+    players = sorted(players, key = lambda x: x.count_point+sum(list(x.material.values())[1:]), reverse=True)
     for i in range(len(players)):
-        print(f'NGƯỜI CHƠI {i+1} CÓ {players[i].count_point + sum(list(players[i].material.values())[1:])} ĐIỂM')
+        rank[players[i].id-1] = str(i+1)
+    return rank
 
-    print(f'NGƯỜI CHƠI THỨ {id} CHIẾN THẮNG')
+def show_point_players(rank):
+    for i in range(len(rank)):
+        print(f'NGƯỜI CHƠI {i+1} ĐỨNG THỨ {rank[i]}')
 
 
 def check_dict(dt):
@@ -131,3 +115,4 @@ def check_get_card_point(m, card):
             return False
 
     return True
+

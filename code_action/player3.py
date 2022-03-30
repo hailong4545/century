@@ -18,206 +18,200 @@
 from init_game import convert
 import numpy as np
 
-# convert thẻ điểm và normal
-def dich_the(card):
-    if "upgrade" not in card.keys():
-        give = np.array(list(card["give_back"].values()))
-        point = card['receive']
-        rei = np.array([0,0,0,0])
-        return give,rei,1,point
-    receive = np.array(list(card["receive"].values()))
-    give = np.array(list(card["give_back"].values()))
-    times = card["times"]
-    upgrade = card["upgrade"]
-    return give,receive,times,upgrade
+name = '3'
 
+def checkMate(arr):
+    for i in arr:
+        if i > 5:
+            return False
+    return True
 
-# từ 1 thẻ normal đến list mọi states có thể
-def card_to_state(hand,the,score):
-    give,rei,times,upgrade = dich_the(the)
-    # nếu là thẻ upgrade
-    if upgrade > 0 and upgrade < 5:
-        return full_upgrade(hand,upgrade),score
-    card = [give,rei]
-    max = times
-    states = []
-    for idnl in range(4):
-        if card[0][idnl] > 0:
-            times = hand[idnl]//card[0][idnl]
-            if times < max:
-                max = times
-    # nếu không phải thẻ upgrade
-    if np.min(hand-give) <0:
-        return [],0
-    score += upgrade
-    for lan in range(max):
-        state = hand - card[0]*(lan+1) + card[1]*(lan+1)
-        while sum(state) > 10:
-            thua = sum(state) - 10
-            for idnl in range(4):
-                state[idnl] -= min(thua,state[idnl])
-        states.append(state)
-    return states,score
+def getTypeCard(card):
+    if card['upgrade'] > 0:
+        return 'card_update'
+    elif sum(list(card['give_back'].values())) == 0:
+        return 'card_get_material'
+    else:
+        return 'card_exchange'
 
-# nâng cấp 1 lần
-def state_to_states(state):
-    states = []
-    for idnl in range(3):
-        s = state.copy()
-        if s[idnl] > 0:
-            s[idnl] -= 1
-            s[idnl+1] += 1
-            states.append(s)
-    return states
+def check(arr):
+    for i in range(len(arr)):
+        if arr[i] < 0:
+            return False
 
-# nâng cấp full
-def full_upgrade(state,upgrade):
-    states = [state]
-    full = []
-    while upgrade > 0:
-        temp = []
-        for state in states:
-            temp += state_to_states(state)
-        full += temp
-        states = temp.copy()
-        upgrade -=1
-    return full
+    return True
 
+def useCard(state, card):
+    result = []
+    act = []
+    type_card = getTypeCard(card)
+    mate = np.array(state)
+    giveback = np.array(list(card['give_back'].values()))
+    receive = np.array(list(card['receive'].values()))
+    if type_card == 'card_update':
+        for i in range(3):
+            for j in range(i,3):
+                if mate[i] > 0 and mate[j] > 0 :
+                    if (i == j and mate[i] >= 2) or i != j:
+                        result.append(mate.copy())
+                        act_giveback = [0, 0, 0, 0]
+                        act_receive = [0, 0, 0, 0]
+                        result[-1][i] -= 1
+                        result[-1][j] -= 1
+                        result[-1][i+1] += 1
+                        result[-1][j+1] += 1
 
-def future(start_items,turn,terminate,max_score,start_score,full_hand):
-    # print(turn,max_score)
-    if turn == terminate:
-        return max_score,turn,start_score
-    items = []
-    for it in start_items:
-        fn = it[0]
-        cards = it[1]
-        point = it[2]
-        for f in fn:
-            for the in cards:
-                if "times" in the.keys() and the["times"] == 100:
-                    states = [f]
-                    new_cards = full_hand
-                    item = [states,new_cards,point]
-                    items.append(item)
+                        act_giveback[i] += 1
+                        act_giveback[j] += 1
+                        act_receive[i+1] += 1
+                        act_receive[j+1] += 1
+
+                        act_giveback = '-'.join(list(map(lambda x: str(x), act_giveback)))
+                        act_receive = '-'.join(list(map(lambda x: str(x), act_receive)))
+                        act.append((type_card, card, convert(act_giveback), convert(act_receive)))
+        for i in range(3):
+            result.append(mate.copy())
+            if result[-1][i] > 0:
+                act_giveback = [0, 0, 0, 0]
+                act_receive = [0, 0, 0, 0]
+                result.append(mate.copy())
+                result[-1][i] -= 1
+                result[-1][i+1] += 1
+
+                act_giveback[i] += 1
+                act_receive[i+1] += 1
+
+                act_giveback = '-'.join(list(map(lambda x: str(x), act_giveback)))
+                act_receive = '-'.join(list(map(lambda x: str(x), act_receive)))
+                act.append((type_card, card, convert(act_giveback), convert(act_receive)))
+            else:
+                result.pop()
+        for i in range(2):
+            result.append(mate.copy())
+            if result[-1][i] > 0:
+                act_giveback = [0, 0, 0, 0]
+                act_receive = [0, 0, 0, 0]
+                result.append(mate.copy())
+                result[-1][i] -= 1
+                result[-1][i+2] += 1
+
+                act_giveback[i] += 1
+                act_receive[i+2] += 1
+
+                act_giveback = '-'.join(list(map(lambda x: str(x), act_giveback)))
+                act_receive = '-'.join(list(map(lambda x: str(x), act_receive)))
+                act.append((type_card, card, convert(act_giveback), convert(act_receive)))
+            else:
+                result.pop()
+        return result, act
+    elif type_card == 'card_get_material':
+        result.append(mate)
+        result[-1] += receive
+        if sum(result[-1]) > 10:
+            return [], []
+
+        act.append((type_card, card, convert('0-0-0-0')))
+        return result, act
+
+    else:
+        t = 0
+        while True:
+            m = mate -(t+1) * giveback
+            if check(m):
+                if sum(mate-(t+1)*giveback+(t+1)*receive) <= 10 and checkMate(mate-(t+1)*giveback+(t+1)*receive):
+                    result.append(mate-(t+1)*giveback+(t+1)*receive)
+                    act.append((type_card, card, t+1, convert('0-0-0-0')))
                 else:
-                    states, new_score = card_to_state(f,the,point)
-                    if len(states) == 0:
-                        a = 0
-                    else:
-                        for state in states:
-                            eval_score = (sum(state*np.array([1,2,3,4])) + point- start_score)/turn
-                            if eval_score > max_score:
-                                max_score = eval_score 
-                        new_cards = [car for car in cards if car != the]
-                        item = [states,new_cards,point + new_score]
-                        items.append(item)
-    return future(items,turn + 1,terminate,max_score,start_score,full_hand)
+                    break
+            else:
+                break
+            t += 1
 
-def hand_to_target(hand,target):
-    x = target-hand
-    give = x*(x<0)*-1
-    give = "-".join([str(a) for a in give])
-    rei = x*(x>0)
-    rei = "-".join([str(a) for a in rei])
-    return give,rei
+        return result, act
 
-def the_doi_nl(hand,target,giv,re):
-    x = target-hand
-    give = x*(x<0)*-1
-        # give = "-".join([str(a) for a in give])
-    rei = x*(x>0)
-        # rei = "-".join([str(a) for a in rei])
+def createAction(player):
+    listAct = [player.card_close]
+    listAct[0] = list(map(lambda x: [x], listAct[0]))
+    while len(listAct) < len(player.card_close):
+        listAct.append([])
+        for i in range(len(listAct[-2])):
+            for j in range(len(listAct[0])):
+                if listAct[0][j][0] not in listAct[-2][i]:
+                    listAct[-1].append(listAct[-2][i]+listAct[0][j])
 
-    times = int(max(give)/max(giv))
-    hand += times*(re)
-    hand -= times*(giv)
-    tra_ve = hand - target
-    tra_ve = "-".join([str(a) for a in tra_ve])
-    return times,tra_ve
+    return listAct[-1]
 
-def the_lay_free(hand,target,giv,re):
-    x = target-hand
-    tra_ve = re - x
-    tra_ve = "-".join([str(a) for a in tra_ve])
-    return tra_ve
+def stopLoop(state, card_point):
+    for card in card_point:
+        if check(state - np.array(list(card['give_back'].values()))):
+            return card
+    return ''
+
+def auto_code(actions, act, state):
+    global actFuture, stateFuture
+    if len(act) != len(actions):
+        n = len(act)
+        listState, listAct = useCard(state, actions[n])
+        if len(listAct) == 0 and len(act) != 0:
+            actFuture.append(act.copy())
+            stateFuture.append(state.copy())
+        else:
+            for i in range(len(listAct)):
+                act.append(listAct[i])
+                auto_code(actions, act, listState[i])
+                act.pop()
+
+def points(a, b):
+    total = 0
+    for i in range(len(a)):
+        total += (b[0] - a[0]) * (i+1)
+    return total
+
+def actionNext(state):
+    global actFuture, stateFuture
+    m = 0
+    index = 0
+    for i in range(len(actFuture)):
+        a = np.array(stateFuture[i])
+        p = points(state, a)
+        if len(actFuture[i]) != 0:
+            if float(p)/len(actFuture[i]) > m:
+                m = float(p)/len(actFuture[i])
+                index = i
+    return actFuture[index][0]
+
+
+actFuture = []
+flag = True
+stateFuture = []
 
 def action(player, board):
-    level = 10
-    hand = np.array(list(player.material.values()))
-    if len(player.card_close + player.card_open) <level:
-        for card_normal in board['card_normal']:
-            id_card = board['card_normal'].index(card_normal)
-            give, rei, times,upgrade = dich_the(card_normal)
-            if rei[0] > 0 and sum(give) == 1 and hand[0] >= id_card:
-                print("thẻ sinh vàng")
-                return 'get_card_normal', card_normal, convert(str(id_card) + "-0-0-0"),convert("0-0-0-0")
-            if sum(give) == 0 and hand[0] >= id_card:
-                print("lấy thẻ free")
-                return 'get_card_normal', card_normal, convert(str(id_card) + "-0-0-0"),convert("0-0-0-0")
-            if give[0] > 0 and sum(give*np.array([0,1,1,1])) == 0 and hand[0] >= id_card:
-                print("thẻ đổi vàng")
-                return 'get_card_normal', card_normal, convert(str(id_card) + "-0-0-0"),convert("0-0-0-0")
-    rest = {'give_back': {'yellow': 0, 'red': 0, 'green': 0, 'brown': 0}, 'receive': {'yellow': 0, 'red': 0, 'green': 0, 'brown': 0}, 'upgrade': 0, 'times': 100, 'bonus': {'yellow': 0, 'red': 0, 'green': 0, 'brown': 0}}
-    full_hand = player.card_close + player.card_open + board['card_point'] + [rest]
-    cards = player.card_close+board['card_point'] + [rest]
-    score_max = 0
-    card_use = None
-    start_score = sum(hand*np.array([1,2,3,4]))
-    ter = 4
-    target_state = None
-    for card in cards:
-        if "times" in card.keys() and card["times"] == 100:
-            item = [[hand],full_hand,0]
-            evaluate,b,c = future([item],1,ter,0,start_score,full_hand)
-            if evaluate > score_max:
-                score_max = evaluate
-                card_use = card
-                target_state = hand
-        states, diem  = card_to_state(hand,card,0)
-        new_cards = [car for car in cards if car != card]
-        for state in states:
-            item = [[state],new_cards,diem]
-            evaluate,b,c = future([item],1,ter,0,start_score,full_hand)
-            if evaluate > score_max:
-                score_max = evaluate
-                card_use = card
-                target_state = state
-    if score_max < 1:
-        print("nghỉ 1",score_max)
-        return "relax"
-    # print(score_max,target_state,dich_the(card_use))
-    give, rei, times,upgrade = dich_the(card_use)
-    # nếu target thẻ nghỉ
-    if times == 100:
-        print("nghỉ 4")
-        return "relax"
-    # nếu target thẻ điểm
-    if upgrade > 5:
-        print("mua thẻ điểm",card_use)
-        return 'get_card_point', card_use
-    # nếu target thẻ normal
+    global flag, actFuture,stateFuture
+    print(list(player.material.values()))
+
+    if len(player.card_close) + len(player.card_open) < 6:
+        return 'get_card_normal', board['card_normal'][0], convert('0-0-0-0'), convert('0-0-0-0')
+
+    card = stopLoop(np.array(list(player.material.values())), board['card_point'])
+    if card != '':
+        print(card)
+        return 'get_card_point', card
+
+    listAct = createAction(player)
+    for act in listAct:
+        auto_code(act, [], list(player.material.values()))
+    if len(actFuture) != 0:
+        actNext = actionNext(list(player.material.values()))
+        actFuture = []
+        stateFuture = []
+        return actNext
     else:
-        if upgrade > 0:
-            tra,lay = hand_to_target(hand,target_state)
-            print("nâng cấp " + str(upgrade) + " lần")
-            return 'card_update', card_use, convert(tra), convert(lay)
-        if sum(give) == 0:
-            print("lấy free")
-            tra = the_lay_free(hand,target_state,give,rei)
-            return 'card_get_material', card_use, convert(tra)
-        else:
-            print("đổi nguyên liệu")
-            lan,tra_ve = the_doi_nl(hand,target_state,give,rei)
-            return 'card_exchange', card_use, lan, convert(tra_ve)
-    if len(player.card_close) == 0:
-        print("nghỉ 2")
-        return "relax"
-    # print(future([[[hand],cards,0,0]],1,len(cards)+1,0,start_score))
-    print("nghỉ 3")
+        return 'relax'
+
     return 'relax'
 
-                 
 
 
-            
+
+
+
